@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>2026 夏カレンダー — 一時帰国 ＋ 夏期講習</title>
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --ink: #1e2733;
+    --muted: #5f6b7a;
+    --line: #e2e8f0;
+    --gifu: #2f9e6f;      /* 岐阜・妻実家 */
+    --gifu-bg: #e7f6ee;
+    --hotel: #2563c9;     /* 予約済宿泊 */
+    --hotel-bg: #e6effb;
+    --flight: #6366f1;    /* フライト・移動 (寒色) */
+    --flight-bg: #e8eafd;
+    /* 集約済: c-work/c-star/c-event は --plan を使用。色数膨張防止のため --work/--star は再有効化禁止 */
+    --work: #b4632a;      /* (未使用・集約済) */
+    --work-bg: #f6ece1;
+    --star: #c79100;      /* (未使用・集約済) */
+    --star-bg: #fbf3d6;
+    --tbd: #94a3b8;       /* 未定 */
+    --tbd-bg: #eef1f5;
+    --saki: #c2410c;      /* 学習系: 姉 (暖色, 白字AA 5.18:1) */
+    --koki: #8f6400;      /* 学習系: 弟 (暖色, 白字AA 5.26:1) */
+    --school: #0e7490;    /* 体験入学 (寒色 teal, flight indigo と弁別) */
+    --plan: #64748b;      /* 出社・合流・行事 集約 (スレート) */
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 20px calc(32px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header.top { margin-bottom: 22px; }
+  h1 { font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: .02em; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 16px 0 22px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .legend .grp { font-weight: 700; color: var(--ink); border-left: 2px solid var(--line); padding-left: 14px; }
+  .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .dot.fill { border-radius: 4px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--panel);
+          border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+          box-shadow: 0 1px 3px rgba(20,30,50,.05), 0 8px 24px rgba(20,30,50,.04); }
+  th { background: #f0f3f7; color: var(--muted); font-size: 11.5px; font-weight: 600;
+       text-transform: uppercase; letter-spacing: .08em; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  th.sat { color: #2563c9; } th.sun { color: #c0392b; }
+  td { vertical-align: top; width: 14.28%; height: 112px; padding: 7px 8px;
+       border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  td:last-child { border-right: none; }
+  tr:last-child td { border-bottom: none; }
+  td.out { background: #fafbfc; }
+  td.ny  { background: #fcfdff; }
+  td[data-conflict] { outline: 2px solid #c0392b; outline-offset: -2px; }
+  .dnum { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .dnum .mo { color: var(--muted); font-weight: 600; font-size: 11px; }
+  td.sat .dnum { color: #2563c9; } td.sun .dnum { color: #c0392b; }
+  .chip { display: block; margin-top: 5px; font-size: 11px; font-weight: 600;
+          padding: 2px 6px; border-radius: 5px; border-left: 3px solid; }
+  /* 旅程・生活トラック = 淡色 + 左ボーダー */
+  .c-gifu  { background: var(--gifu-bg);  border-color: var(--gifu);  color: #1d6b4b; }
+  .c-hotel { background: var(--hotel-bg); border-color: var(--hotel); color: #1c4ea0; }
+  .c-flight{ background: var(--flight-bg);border-color: var(--flight);color: #5a37a0; }
+  .c-work  { background: #eef1f5; border-color: var(--plan); color: #475569; }
+  .c-star  { background: #eef1f5; border-color: var(--plan); color: #475569; }
+  .c-tbd   { background: var(--tbd-bg);   border-color: var(--tbd);   color: #586374; }
+  .c-event { background: #eef1f5; border-color: var(--plan); color: #475569; }
+  .c-school{ background: #e3f1f4; border-color: var(--school); color: #0c5c70; }
+  /* 夏期講習/キャンプ トラック = 塗りつぶし(別枠) */
+  .c-saki  { background: var(--saki); border: none; color: #fff; box-shadow: 0 1px 2px rgba(150,60,10,.25); }
+  .c-koki  { background: var(--koki); border: none; color: #fff; box-shadow: 0 1px 2px rgba(150,90,10,.2); }
+  .c-saki-soft { background: var(--saki); border: 1px dashed rgba(255,255,255,.85); color: #fff; box-shadow: 0 1px 2px rgba(150,60,10,.2); }
+  /* 衝突セルの chip リング (赤 graphical 5.4:1) — c-saki/c-koki の後で box-shadow を上書き */
+  .c-conflict { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #c0392b; }
+  .c-saki .who, .c-koki .who, .c-saki-soft .who { color: #fff; font-weight: 800; opacity: 1; }
+  .who { font-weight: 700; opacity: .85; }
+  footer.note { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  footer.note h3 { font-size: 13px; color: var(--ink); margin: 16px 0 4px; }
+  footer.note ul { margin: 6px 0 0; padding-left: 18px; max-width: 46em; }
+  footer.note li { margin: 2px 0; }
+  .warn { color: #c0392b; font-weight: 500; }
+  /* --- フィルタ control --- */
+  .filterbar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 6px; padding: 10px 0; margin: 0 0 14px; background: var(--bg);
+    box-shadow: 0 2px 6px rgba(20,30,50,.06); }
+  .filterbar button { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    -webkit-appearance: none; appearance: none; touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,0,0,.06);
+    min-height: 44px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 9px;
+    background: var(--panel); color: var(--muted); transition: background .12s, color .12s; }
+  .filterbar button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .filterbar button:focus-visible { outline: 2px solid var(--flight); outline-offset: 2px; }
+  .filter-status { font-size: 12px; color: var(--muted); margin-left: 4px; }
+  /* --- フィルタ適用 (data-track は JS 付与) --- */
+  body.filter-academic .chip[data-track="life"] { display: none; }
+  body.filter-life .chip[data-track="academic"] { display: none; }
+  /* --- 曜日ラベル: PC では非表示 (thead が担う)、モバイルカードでのみ表示 --- */
+  .wd { display: none; }
+  /* --- モバイル (iPhone Pro 縦 ≤640px): 日ごと縦積みカード --- */
+  @media (max-width: 640px) {
+    body { padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); }
+    .wrap { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+    h1 { font-size: 21px; }
+    .filterbar { top: env(safe-area-inset-top); margin: 0 -12px 12px;
+      padding-left: 12px; padding-right: 12px; }
+    .filterbar button { flex: 1 1 auto; }
+    table, tbody, tr, td { display: block; width: auto; }
+    thead { display: none; }
+    table { border: none; border-radius: 0; box-shadow: none; background: transparent; overflow: visible; }
+    tr { margin: 0 0 14px; padding-top: 10px; border-top: 2px solid var(--line); }
+    tr:first-child { border-top: none; padding-top: 0; }
+    td { height: auto; min-height: 0; width: auto;
+      border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px;
+      padding: 9px 11px; background: var(--panel); box-shadow: 0 1px 2px rgba(20,30,50,.05); }
+    td:last-child { border-right: 1px solid var(--line); }
+    tr:last-child td { border-bottom: 1px solid var(--line); }
+    td.out { background: #fafbfc; }
+    .dnum { font-size: 14px; }
+    .wd { display: inline; font-weight: 700; }
+    .chip { font-size: 12px; }
+    /* フィルタで空になった日/週はモバイルでは畳む (PC は grid 維持) */
+    td.td-empty, tr.tr-empty { display: none; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    table { box-shadow: none; }
+    .filterbar { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>2026 夏カレンダー — 一時帰国 ＋ 夏期講習</h1>
+    <div class="sub">家族3人 6/29発・本人 7/25発 / 全員 8/8帰国。<b>旅程は JST</b>、<b>夏期講習/キャンプは現地 ET(NY実施)</b>。online受講時刻は日本時間(JST)で併記。</div>
+    <div class="legend">
+      <span class="grp">それ以外 = 枠線・寒色:</span>
+      <span><i class="dot" style="background:var(--gifu)"></i>岐阜</span>
+      <span><i class="dot" style="background:var(--hotel)"></i>宿泊</span>
+      <span><i class="dot" style="background:var(--flight)"></i>フライト</span>
+      <span><i class="dot" style="background:var(--school)"></i>体験入学</span>
+      <span><i class="dot" style="background:var(--plan)"></i>出社・合流・行事</span>
+      <span><i class="dot" style="background:var(--tbd)"></i>未定</span>
+      <span class="grp">学習系 = 塗り・暖色:</span>
+      <span><i class="dot fill" style="background:var(--saki)"></i>姉</span>
+      <span><i class="dot fill" style="background:var(--koki)"></i>弟</span>
+      <span><i class="dot fill c-saki-soft"></i>随時/未確定</span>
+      <span style="color:var(--muted)">📚講習 🎭演劇 💻STEM 📝英検 ほか（アイコンは目印）</span>
+    </div>
+  </header>
+
+  <div class="filterbar" role="group" aria-label="表示フィルタ">
+    <button type="button" data-mode="academic" aria-pressed="false">学習系</button>
+    <button type="button" data-mode="life" aria-pressed="false">それ以外（体験入学含む）</button>
+    <button type="button" data-mode="both" aria-pressed="true" class="active">両方</button>
+    <span id="filter-status" class="filter-status"></span>
+  </div>
+
+  <div class="warn" style="font-weight:600;font-size:13px;margin:0 0 14px;">⚠ 7/8・7/10 は準1級②(朝8:40)が体験入学(9:00)と時間衝突 → 欠席/振替の判断が必要</div>
+
+  <table>
+    <thead>
+      <tr><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th class="sat">土</th><th class="sun">日</th></tr>
+    </thead>
+    <tbody>
+      <!-- Week 6/22 — NY 対面(出発前) -->
+      <tr>
+        <td class="ny"><div class="dnum"><span class="mo">6/</span>22</div>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 対面(スカ17:50)</span>
+            <span class="chip c-koki"><span class="who">弟</span> 📚国算 対面(教材取得)</span></td>
+        <td class="ny"><div class="dnum">23</div>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 対面</span></td>
+        <td class="ny"><div class="dnum">24</div>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 対面(ハリ19:40)</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚受験国算(教材取得)</span></td>
+        <td class="ny"><div class="dnum">25</div>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 対面</span></td>
+        <td class="ny"><div class="dnum">26</div>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 対面</span></td>
+        <td class="sat"><div class="dnum">27</div><span class="chip c-tbd">土曜・模試 受けない</span></td>
+        <td class="sun out"><div class="dnum">28</div></td>
+      </tr>
+      <!-- Week 6/29 — 出発・岐阜着 + ENA online開始 -->
+      <tr>
+        <td><div class="dnum"><span class="mo">6/</span>29</div>
+            <span class="chip c-flight">🛫 家族 JFK発</span></td>
+        <td><div class="dnum"><span class="mo">6/</span>30</div>
+            <span class="chip c-flight">🛬 羽田4:35</span>
+            <span class="chip c-flight">✈ 名古屋 8:15-9:10</span>
+            <span class="chip c-gifu">岐阜着</span></td>
+        <td><div class="dnum"><span class="mo">7/</span>1</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝8:40)</span></td>
+        <td><div class="dnum">2</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝6:50)</span></td>
+        <td><div class="dnum">3</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝8:40)</span></td>
+        <td class="sat"><div class="dnum">4</div><span class="chip c-gifu">岐阜</span></td>
+        <td class="sun"><div class="dnum">5</div><span class="chip c-gifu">岐阜</span></td>
+      </tr>
+      <!-- Week 7/6 — 体験入学 + ENA online(1期終了) -->
+      <tr>
+        <td><div class="dnum">6</div>
+            <span class="chip c-school">🏫 体験入学</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝6:50)</span></td>
+        <td><div class="dnum">7</div>
+            <span class="chip c-school">🏫 体験入学</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝6:50)</span></td>
+        <td data-conflict><div class="dnum">8</div>
+            <span class="chip c-school">🏫 体験入学</span>
+            <span class="chip c-saki c-conflict"><span class="who">姉</span> ⚠ 📚準1級 online(JST朝8:40)</span></td>
+        <td><div class="dnum">9</div>
+            <span class="chip c-school">🏫 体験入学</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(JST朝6:50)</span></td>
+        <td data-conflict><div class="dnum">10</div>
+            <span class="chip c-school">🏫 体験入学</span>
+            <span class="chip c-saki c-conflict"><span class="who">姉</span> ⚠ 📚準1級 online(朝8:40)・1期終了</span></td>
+        <td class="sat"><div class="dnum">11</div><span class="chip c-gifu">岐阜</span></td>
+        <td class="sun"><div class="dnum">12</div><span class="chip c-gifu">岐阜</span></td>
+      </tr>
+      <!-- Week 7/13 — 体験入学+友 + 2期1節 準1級(テキスト入手) -->
+      <tr>
+        <td><div class="dnum">13</div>
+            <span class="chip c-school">🏫 体験入学 +友</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト/JST3:30)</span>
+            <span class="chip c-koki"><span class="who">弟</span> 📚2期教材(郵送/1日)</span></td>
+        <td><div class="dnum">14</div><span class="chip c-school">🏫 体験入学 +友</span></td>
+        <td><div class="dnum">15</div>
+            <span class="chip c-school">🏫 体験入学 +友</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト)</span></td>
+        <td><div class="dnum">16</div><span class="chip c-school">🏫 体験入学 +友</span></td>
+        <td><div class="dnum">17</div>
+            <span class="chip c-school">🏫 体験入学 +友</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト)</span></td>
+        <td class="sat"><div class="dnum">18</div><span class="chip c-gifu">岐阜</span></td>
+        <td class="sun"><div class="dnum">19</div><span class="chip c-gifu">岐阜</span></td>
+      </tr>
+      <!-- Week 7/20 — 岐阜 + 2期1節 準1級(テキスト入手) -->
+      <tr>
+        <td><div class="dnum">20</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト)</span></td>
+        <td><div class="dnum">21</div><span class="chip c-gifu">岐阜</span></td>
+        <td><div class="dnum">22</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト)</span></td>
+        <td><div class="dnum">23</div><span class="chip c-gifu">岐阜</span></td>
+        <td><div class="dnum">24</div>
+            <span class="chip c-gifu">岐阜</span>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(テキスト)・2期1節終了</span></td>
+        <td class="sat"><div class="dnum">25</div>
+            <span class="chip c-gifu">家族:岐阜</span>
+            <span class="chip c-flight"><span class="who">本人</span> 🛫JFK発</span></td>
+        <td class="sun"><div class="dnum">26</div>
+            <span class="chip c-flight"><span class="who">本人</span> 🛬羽田→東京</span></td>
+      </tr>
+      <!-- Week 7/27 -->
+      <tr>
+        <td><div class="dnum">27</div>
+            <span class="chip c-gifu">家族:岐阜</span>
+            <span class="chip c-work"><span class="who">本人</span> 🏢大手町出社</span></td>
+        <td><div class="dnum">28</div>
+            <span class="chip c-star">⭐ 神戸合流</span>
+            <span class="chip c-event">🪦 墓参り(神戸)</span>
+            <span class="chip c-hotel">🏨 宿(神戸) 15:00</span></td>
+        <td><div class="dnum">29</div>
+            <span class="chip c-hotel">🏨 宿(淡路島)</span></td>
+        <td><div class="dnum">30</div>
+            <span class="chip c-tbd">淡路CO ~11:00・未定</span></td>
+        <td><div class="dnum">31</div><span class="chip c-tbd">未定</span></td>
+        <td class="sat"><div class="dnum"><span class="mo">8/</span>1</div>
+            <span class="chip c-hotel">🏨 宿(浜名湖)</span></td>
+        <td class="sun"><div class="dnum">2</div>
+            <span class="chip c-tbd">家族旅行へ(企画中)</span></td>
+      </tr>
+      <!-- Week 8/3 — 帰国週 -->
+      <tr>
+        <td><div class="dnum">3</div><span class="chip c-tbd">未定</span></td>
+        <td><div class="dnum">4</div><span class="chip c-tbd">未定</span></td>
+        <td><div class="dnum">5</div><span class="chip c-tbd">未定</span></td>
+        <td><div class="dnum">6</div><span class="chip c-tbd">未定</span></td>
+        <td><div class="dnum">7</div><span class="chip c-tbd">未定</span></td>
+        <td class="sat"><div class="dnum">8</div>
+            <span class="chip c-flight">🛫 全員帰国 羽田19:30発</span></td>
+        <td class="sun out"><div class="dnum">9</div></td>
+      </tr>
+      <!-- Week 8/10 — NY: 演劇 / Mobile App -->
+      <tr>
+        <td class="ny"><div class="dnum">10</div>
+            <span class="chip c-saki"><span class="who">姉</span> 🎭演劇(9:30-15:00)</span>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Mobile App(9-15)</span></td>
+        <td class="ny"><div class="dnum">11</div>
+            <span class="chip c-saki"><span class="who">姉</span> 🎭演劇</span>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Mobile App</span></td>
+        <td class="ny"><div class="dnum">12</div>
+            <span class="chip c-saki"><span class="who">姉</span> 🎭演劇</span>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Mobile App</span></td>
+        <td class="ny"><div class="dnum">13</div>
+            <span class="chip c-saki"><span class="who">姉</span> 🎭演劇</span>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Mobile App</span></td>
+        <td class="ny"><div class="dnum">14</div>
+            <span class="chip c-saki"><span class="who">姉</span> 🎭演劇</span>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Mobile App</span></td>
+        <td class="sat"><div class="dnum">15</div></td>
+        <td class="sun out"><div class="dnum">16</div></td>
+      </tr>
+      <!-- Week 8/17 — NY: 英検別塾 / Architecture -->
+      <tr>
+        <td class="ny"><div class="dnum">17</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Architecture(9-15)</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">18</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">19</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">20</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">21</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="sat"><div class="dnum">22</div></td>
+        <td class="sun out"><div class="dnum">23</div></td>
+      </tr>
+      <!-- Week 8/24 — NY: 英検別塾 / Digital Art -->
+      <tr>
+        <td class="ny"><div class="dnum">24</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art(9-15)</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">25</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">26</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">27</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="ny"><div class="dnum">28</div>
+            <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+        <td class="sat"><div class="dnum">29</div></td>
+        <td class="sun out"><div class="dnum">30</div>
+            <span class="chip c-saki-soft"><span class="who">姉</span> 📝別塾〜10/4(英検一次)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="note">
+    <h3>夏期講習/キャンプ(塗りつぶし=旅程と別トラック)</h3>
+    <ul>
+      <li><b>ENA 1期</b>: 6/22週=<b>対面(NY、出発前)</b> / 6/29出発後は <b>online(JST朝)</b>。姉は準1級フル(〜7/10)、弟・受験国算は教材取得で1日のみ。</li>
+      <li class="warn">⚠ 準1級②(JST朝8:40〜10:00 = 7/8・7/10 等)は岐阜の<b>体験入学(9:00〜)と時間が重なる</b>。①(朝6:50〜)の日を優先するか、当該日は欠席/振替の判断が必要。</li>
+      <li><b>ENA 2期1節(7/13–24)</b>: 姉は<b>準1級を受講(テキスト入手目的)</b>。実時刻は<b>JST深夜3:30</b>のためライブでなく教材・録画主体(全6コマ=7/13・15・17・20・22・24)。弟は2期教材を1日のみ取得。</li>
+      <li><b>ENA 2期2節(7/27–8/7)は除外</b>(深夜JSTかつ帰国直前)。</li>
+      <li><b>8月キャンプ(NY)</b>: 姉=演劇 Artistree(8/10週)/ 弟=Mobile App・Architecture・Digital Art(3週連続)。STEM 3本は支払済。</li>
+      <li><b>英検準1級 別塾</b>(点線=随時): 8/8帰国後〜<b>一次10/4</b>まで (2h)。日程未確定、8月後半〜9月で週数日を想定。</li>
+      <li>概算(精算対象): ENA / 演劇 / STEM(支払済) ほか。各月とも会社補助の上限内。</li>
+    </ul>
+    <h3>一時帰国(旅程)</h3>
+    <ul>
+      <li>〜7/27: 家族3人=岐阜(妻実家、kids 体験入学)/ 本人=NY→7/26 東京(自宅 or ホテル 未定)</li>
+      <li>7/28〜: 家族4人で行動(神戸→淡路島→…→浜名湖→帰国)</li>
+      <li>確定宿: 7/28 宿(神戸)/ 7/29 宿(淡路島)/ 8/1 宿(浜名湖)</li>
+      <li>家族国内線: 6/30 羽田→名古屋(中部) JAL201 08:15-09:10(発券済)</li>
+      <li class="warn">要手配: 7/27 東京→7/28 神戸の移動(新幹線~3h)/ 7/30-31・8/2以降の行程 / 国際線の実時刻</li>
+      <li class="warn">再入国: 8/8 全員の再入国記録を確認</li>
+    </ul>
+    <div style="margin-top:8px;font-size:12px;font-weight:500;">旅程の時刻は JST。夏期講習/キャンプは現地ET実施(online受講時刻のみ JST 併記)。2期1節準1級=テキスト入手目的で受講・2期2節除外。Last updated: 2026-06-04</div>
+  </footer>
+</div>
+<script>
+(function () {
+  var ACAD = ['c-saki', 'c-koki', 'c-saki-soft'];
+  var WD = ['月', '火', '水', '木', '金', '土', '日'];
+  // 1) 全 chip に data-track 付与 (academic / life)
+  document.querySelectorAll('.chip').forEach(function (c) {
+    var acad = ACAD.some(function (k) { return c.classList.contains(k); });
+    c.setAttribute('data-track', acad ? 'academic' : 'life');
+  });
+  // 2) モバイル縦積み用に曜日ラベルを各日へ付与 (PC では CSS で非表示)
+  document.querySelectorAll('tbody tr').forEach(function (tr) {
+    Array.prototype.forEach.call(tr.children, function (td, i) {
+      var d = td.querySelector('.dnum');
+      if (d && i < 7 && !d.querySelector('.wd')) {
+        var w = document.createElement('span');
+        w.className = 'wd';
+        w.textContent = WD[i] + ' ';
+        d.insertBefore(w, d.firstChild);
+      }
+    });
+  });
+  var body = document.body;
+  var btns = document.querySelectorAll('.filterbar button');
+  var status = document.getElementById('filter-status');
+  var LABEL = { academic: '学習系のみ', life: 'それ以外のみ', both: '両方' };
+  function visibleUnder(track, mode) { return mode === 'both' || track === mode; }
+  // 可視 chip がゼロの日(td)と週(tr)を畳む — モバイルのみ CSS で非表示
+  function updateEmpty(mode) {
+    document.querySelectorAll('tbody tr').forEach(function (tr) {
+      var rowHas = false;
+      Array.prototype.forEach.call(tr.children, function (td) {
+        var vis = 0;
+        td.querySelectorAll('.chip').forEach(function (c) {
+          if (visibleUnder(c.getAttribute('data-track'), mode)) vis++;
+        });
+        var empty = vis === 0;
+        td.classList.toggle('td-empty', empty);
+        if (!empty) rowHas = true;
+      });
+      tr.classList.toggle('tr-empty', !rowHas);
+    });
+  }
+  function setFilter(mode) {
+    body.classList.remove('filter-academic', 'filter-life');
+    if (mode === 'academic') body.classList.add('filter-academic');
+    else if (mode === 'life') body.classList.add('filter-life');
+    btns.forEach(function (b) {
+      var on = b.getAttribute('data-mode') === mode;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.classList.toggle('active', on);
+    });
+    if (status) status.textContent = '表示: ' + LABEL[mode];
+    updateEmpty(mode);
+  }
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () { setFilter(b.getAttribute('data-mode')); });
+  });
+  setFilter('both');
+})();
+</script>
+</body>
+</html>
