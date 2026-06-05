@@ -131,7 +131,8 @@
   /* iPhone 等を横向き(landscape)で持った時 = コンパクトな週グリッド俯瞰モード
      (幅852px > 640px のため縦積みカードでなく7列グリッドが出る。行を圧縮し夏全体を ~2 画面で俯瞰) */
   @media (orientation: landscape) and (max-height: 500px) {
-    body { padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); }
+    /* 横持ちでは Dynamic Island / カメラが左右端に来るため左右に safe-area inset を確保 */
+    body { padding: 10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left)); }
     header.top { margin-bottom: 8px; }
     h1 { font-size: 17px; }
     .sub { font-size: 11px; line-height: 1.35; }
