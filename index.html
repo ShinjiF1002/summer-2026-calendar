@@ -25,8 +25,9 @@
     --star-bg: #fbf3d6;
     --tbd: #94a3b8;       /* 未定 */
     --tbd-bg: #eef1f5;
-    --saki: #c2410c;      /* 学習系: 姉 (暖色, 白字AA 5.18:1) */
-    --koki: #8f6400;      /* 学習系: 弟 (暖色, 白字AA 5.26:1) */
+    --saki: #c2410c;      /* 学習系: 姉 ena準1級 (暖色, 白字AA 5.18:1) */
+    --koki: #8f6400;      /* 学習系: 弟 ena/STEM (暖色, 白字AA 5.26:1) */
+    --ej:   #6d28d9;      /* 学習系: 姉 英検別塾 (バイオレット, ena橙と弁別, 白字AA 5.9:1) */
     --school: #0e7490;    /* 体験入学 (寒色 teal, flight indigo と弁別) */
     --plan: #64748b;      /* 出社・合流・行事 集約 (スレート) */
   }
@@ -77,10 +78,10 @@
   /* 夏期講習/キャンプ トラック = 塗りつぶし(別枠) */
   .c-saki  { background: var(--saki); border: none; color: #fff; box-shadow: 0 1px 2px rgba(150,60,10,.25); }
   .c-koki  { background: var(--koki); border: none; color: #fff; box-shadow: 0 1px 2px rgba(150,90,10,.2); }
-  .c-saki-soft { background: var(--saki); border: 1px dashed rgba(255,255,255,.85); color: #fff; box-shadow: 0 1px 2px rgba(150,60,10,.2); }
+  .c-ej-soft { background: var(--ej); border: 1px dashed rgba(255,255,255,.9); color: #fff; box-shadow: 0 1px 2px rgba(80,40,160,.28); }
   /* 衝突セルの chip リング (赤 graphical 5.4:1) — c-saki/c-koki の後で box-shadow を上書き */
   .c-conflict { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #c0392b; }
-  .c-saki .who, .c-koki .who, .c-saki-soft .who { color: #fff; font-weight: 800; opacity: 1; }
+  .c-saki .who, .c-koki .who, .c-ej-soft .who { color: #fff; font-weight: 800; opacity: 1; }
   .who { font-weight: 700; opacity: .85; }
   footer.note { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
   footer.note h3 { font-size: 13px; color: var(--ink); margin: 16px 0 4px; }
@@ -165,10 +166,10 @@
       <span><i class="dot" style="background:var(--school)"></i>体験入学</span>
       <span><i class="dot" style="background:var(--plan)"></i>出社・合流・行事</span>
       <span><i class="dot" style="background:var(--tbd)"></i>未定</span>
-      <span class="grp">学習系 = 塗り・暖色:</span>
-      <span><i class="dot fill" style="background:var(--saki)"></i>姉</span>
-      <span><i class="dot fill" style="background:var(--koki)"></i>弟</span>
-      <span><i class="dot fill c-saki-soft"></i>随時/未確定</span>
+      <span class="grp">学習系 = 塗り:</span>
+      <span><i class="dot fill" style="background:var(--saki)"></i>姉 ena(準1級・橙)</span>
+      <span><i class="dot fill" style="background:var(--koki)"></i>弟 ena/STEM(金)</span>
+      <span><i class="dot fill c-ej-soft"></i>姉 英検別塾(紫・候補)</span>
       <span style="color:var(--muted)">📚講習 🎭演劇 💻STEM 📝英検 ほか（アイコンは目印）</span>
     </div>
   </header>
@@ -229,7 +230,8 @@
       <tr>
         <td><div class="dnum">6</div>
             <span class="chip c-school">🏫 体験入学</span>
-            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(スカ/JST朝6:50)</span></td>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(スカ/JST朝6:50)</span>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 online(JST夜・例/調整可)</span></td>
         <td><div class="dnum">7</div>
             <span class="chip c-school">🏫 体験入学</span>
             <span class="chip c-saki"><span class="who">姉</span> 📚準1級 online(スカ/JST朝6:50)</span></td>
@@ -250,6 +252,7 @@
         <td><div class="dnum">13</div>
             <span class="chip c-school">🏫 体験入学 +友</span>
             <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(スカ/テキスト・JST3:30)</span>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 online(JST夜・例/調整可)</span>
             <span class="chip c-koki"><span class="who">弟</span> 📚2期教材(郵送/1日)</span></td>
         <td><div class="dnum">14</div><span class="chip c-school">🏫 体験入学 +友</span></td>
         <td><div class="dnum">15</div>
@@ -266,7 +269,8 @@
       <tr>
         <td><div class="dnum">20</div>
             <span class="chip c-gifu">岐阜</span>
-            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(ハリ/テキスト)</span></td>
+            <span class="chip c-saki"><span class="who">姉</span> 📚準1級2期(ハリ/テキスト)</span>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 online(JST夜・例/調整可)</span></td>
         <td><div class="dnum">21</div><span class="chip c-gifu">岐阜</span></td>
         <td><div class="dnum">22</div>
             <span class="chip c-gifu">岐阜</span>
@@ -285,6 +289,7 @@
       <tr>
         <td><div class="dnum">27</div>
             <span class="chip c-gifu">家族:岐阜</span>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 online(JST夜・例/調整可)</span>
             <span class="chip c-work"><span class="who">本人</span> 🏢大手町出社</span></td>
         <td><div class="dnum">28</div>
             <span class="chip c-star">⭐ 神戸合流</span>
@@ -335,19 +340,19 @@
       <tr>
         <td class="ny"><div class="dnum">17</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Architecture(9-15)</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">18</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">19</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">20</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">21</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Architecture</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="sat"><div class="dnum">22</div></td>
         <td class="sun out"><div class="dnum">23</div></td>
       </tr>
@@ -355,22 +360,22 @@
       <tr>
         <td class="ny"><div class="dnum">24</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art(9-15)</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">25</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">26</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">27</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="ny"><div class="dnum">28</div>
             <span class="chip c-koki"><span class="who">弟</span> 💻Digital Art</span>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝英検別塾 随時</span></td>
         <td class="sat"><div class="dnum">29</div></td>
         <td class="sun out"><div class="dnum">30</div>
-            <span class="chip c-saki-soft"><span class="who">姉</span> 📝別塾〜10/4(英検一次)</span></td>
+            <span class="chip c-ej-soft"><span class="who">姉</span> 📝別塾〜10/4(英検一次)</span></td>
       </tr>
     </tbody>
   </table>
@@ -396,12 +401,12 @@
       <li class="warn">要手配: 7/27 東京→7/28 神戸の移動(新幹線~3h)/ 7/30-31・8/2以降の行程 / 国際線の実時刻</li>
       <li class="warn">再入国: 8/8 全員の再入国記録を確認</li>
     </ul>
-    <div style="margin-top:8px;font-size:12px;font-weight:500;">旅程の時刻は JST。夏期講習/キャンプは現地ET実施(online受講時刻のみ JST 併記)。2期1節準1級=テキスト入手目的で受講・2期2節除外。準1級の校舎: スカ=スカースデール / ハリ=ハリソン(出典: ena要項 p.14)。Last updated: 2026-06-14</div>
+    <div style="margin-top:8px;font-size:12px;font-weight:500;">旅程の時刻は JST。夏期講習/キャンプは現地ET実施(online受講時刻のみ JST 併記)。2期1節準1級=テキスト入手目的で受講・2期2節除外。準1級の校舎: スカ=スカースデール / ハリ=ハリソン(出典: ena要項 p.14)。Last updated: 2026-06-16</div>
   </footer>
 </div>
 <script>
 (function () {
-  var ACAD = ['c-saki', 'c-koki', 'c-saki-soft'];
+  var ACAD = ['c-saki', 'c-koki', 'c-ej-soft'];
   var WD = ['月', '火', '水', '木', '金', '土', '日'];
   // 1) 全 chip に data-track 付与 (academic / life)
   document.querySelectorAll('.chip').forEach(function (c) {
